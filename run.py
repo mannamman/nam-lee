@@ -18,8 +18,7 @@ COUNT = 30
 #30
 SIZE = 2
 #base v1
-result = list()
-flag = 1
+
 class sensor:
     def __init__(self):
         self.arr = list()
@@ -38,29 +37,12 @@ def read_spi_adc(adcChannel):
 
 def determin(v1,v2,v3):
     global status
-    global result
-    global flag
     if(v1>abs(v3-gap) and v1>abs(v2-gap) and hasPeople == True):#down
         status = -1
     if(abs(v1-v3)<gap and abs(v1-v2)<gap and hasPeople == True):#stop
         status = 0
     elif(hasPeople == False):#up
         status = 1
-    if(len(result)>2):
-        result.pop(0)
-    else:
-        result.append(status)
-    if(flag != status and sum(result)/SIZE==status):
-        flag = status
-        print('fffffffffffffffffff')
-        msgs = [
-            {
-            'topic' : '/test',
-            'payload' : flag,
-            'qos' : 0
-        }
-        ]
-        publish.multiple(msgs,hostname=brokerIP)
     send_msg()
     
 def send_msg():
@@ -100,9 +82,9 @@ try:
             determin(sensor1.get_avg(),sensor2.get_avg(),sensor3.get_avg())
             print("v1 : {}, v2 : {}, v3 : {}, haspeople : {}, status : {}, count : {}".
                   format(sensor1.get_avg(),sensor2.get_avg(),sensor3.get_avg(),hasPeople,status,COUNT))
-            sensor1.pop(0)
-            sensor2.pop(0)
-            sensor3.pop(0)
+            sensor1.pop()
+            sensor2.pop()
+            sensor3.pop()
         else:
             sensor1.append(v1)
             sensor2.append(v2)
